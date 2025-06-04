@@ -89,7 +89,7 @@ $$
 Any transfer or burn operation on token $t$ must reset its individual approval: `getApproved(t) = address(0)`.
 
 ### 4.3 Operator Enumeration Bounds
-If `isApprovedForAll(owner, operator) = true`, then the operator must appear in the owner's internal operator list (implementation-dependent).
+If `isApprovedForAll(owner, operator) = true`, then the operator must appear in the owner's internal operator list (implementation-dependent). (Note: This invariant applies to implementations that specifically provide an enumerable list of operators for an owner, as the ERC-721 standard itself does not mandate this.)
 
 ---
 
@@ -114,6 +114,8 @@ The contract must return true for all supported interfaces when queried via `sup
 $$
 \forall\,I\in\{\text{ERC165},\text{ERC721},\text{ERC721Metadata}\}:\;\text{supportsInterface}(I)=\text{true}
 $$
+
+(Note: If the contract also implements `ERC721Enumerable`, then `supportsInterface(type(IERC721Enumerable).interfaceId)` must also return `true`.)
 
 ### 6.2 Token URI Consistency
 If token URIs follow a pattern like `tokenURI(tokenId) = baseURI + tokenId`, then changes to `baseURI` must be reflected consistently across all token URIs.
