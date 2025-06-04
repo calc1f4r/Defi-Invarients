@@ -35,3 +35,4 @@ Please feel free to open issues or submit pull requests to help make this reposi
 
 This project is open source and available under standard open source licensing terms.
 
+Inspired by https://github.com/crytic/properties
