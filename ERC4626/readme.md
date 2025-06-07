@@ -1,25 +1,38 @@
-# Major invariants for ERC-4626 vaults
-### 1. Supply & Asset Accounting
+# Major Invariants for ERC-463. **Asset→Share→Asset**
+
+   ```math
+   \mathit{convertToAssets}\bigl(\mathit{convertToShares}(A)\bigr)\;\ge\;A
+   ```
+
+   Prevents "free" asset creation by round-tripping.
+
+4. **Share→Asset→Share**
+
+   ```math
+   \mathit{convertToShares}\bigl(\mathit{convertToAssets}(S)\bigr)\;\le\;S
+   ```
+
+   Prevents "free" share creation by round-tripping.y & Asset Accounting
 
 1. **Total-Supply Consistency**
 
-   $$
-     \mathit{totalSupply}() \;=\; \sum_{a \in \mathit{accounts}} \! \mathit{balanceOf}(a)
-   $$
+   ```math
+   \mathit{totalSupply}() \;=\; \sum_{a \in \mathit{accounts}} \! \mathit{balanceOf}(a)
+   ```
 
    Ensures no phantom shares exist.
 
 2. **Total-Assets Accuracy**
 
-   $$
-     \mathit{totalAssets}() \;=\; \text{on-chain balance of underlying tokens held by vault}
-   $$
+   ```math
+   \mathit{totalAssets}() \;=\; \text{on-chain balance of underlying tokens held by vault}
+   ```
 
    After a successful deposit of `A` assets:
 
-   $$
-     \mathit{totalAssets}_{\text{new}} = \mathit{totalAssets}_{\text{old}} + A
-   $$
+   ```math
+   \mathit{totalAssets}_{\text{new}} = \mathit{totalAssets}_{\text{old}} + A
+   ```
 
    (minus any protocol fees, which must be inclusive in all asset accounting)
 
@@ -48,33 +61,33 @@
 
 5. **PreviewDeposit ≤ Ideal**
 
-   $$
-     \mathit{previewDeposit}(A)\;\le\;\mathit{convertToShares}(A)
-   $$
+   ```math
+   \mathit{previewDeposit}(A)\;\le\;\mathit{convertToShares}(A)
+   ```
 
    Accounts for deposit fees and slippage bounds.
 
 6. **PreviewMint ≥ Ideal**
 
-   $$
-     \mathit{previewMint}(S)\;\ge\;\mathit{convertToAssets}(S)
-   $$
+   ```math
+   \mathit{previewMint}(S)\;\ge\;\mathit{convertToAssets}(S)
+   ```
 
    Accounts for mint fees and slippage bounds.
 
 7. **PreviewWithdraw ≥ Ideal**
 
-   $$
-     \mathit{previewWithdraw}(A)\;\ge\;\mathit{convertToShares}(A)
-   $$
+   ```math
+   \mathit{previewWithdraw}(A)\;\ge\;\mathit{convertToShares}(A)
+   ```
 
    Ensures withdrawals factor in fees/slippage conservatively.
 
 8. **PreviewRedeem ≤ Ideal**
 
-   $$
-     \mathit{previewRedeem}(S)\;\le\;\mathit{convertToAssets}(S)
-   $$
+   ```math
+   \mathit{previewRedeem}(S)\;\le\;\mathit{convertToAssets}(S)
+   ```
 
    Ensures redemptions factor in fees/slippage conservatively.
 
@@ -85,35 +98,35 @@
 
 9. **Deposit vs. Preview**
 
-   $$
-     \mathit{deposit}(A) \;\ge\; \mathit{previewDeposit}(A)
-     \quad\wedge\quad
-     \mathit{deposit}(A) \;\le\; \mathit{convertToShares}(A)
-   $$
+   ```math
+   \mathit{deposit}(A) \;\ge\; \mathit{previewDeposit}(A)
+   \quad\wedge\quad
+   \mathit{deposit}(A) \;\le\; \mathit{convertToShares}(A)
+   ```
 
 10. **Mint vs. Preview**
 
-    $$
-      \mathit{mint}(S) \;\le\; \mathit{previewMint}(S)
-      \quad\wedge\quad
-      \mathit{mint}(S) \;\ge\; \mathit{convertToAssets}(S)
-    $$
+    ```math
+    \mathit{mint}(S) \;\le\; \mathit{previewMint}(S)
+    \quad\wedge\quad
+    \mathit{mint}(S) \;\ge\; \mathit{convertToAssets}(S)
+    ```
 
 11. **Withdraw vs. Preview**
 
-    $$
-      \mathit{withdraw}(A) \;\le\; \mathit{previewWithdraw}(A)
-      \quad\wedge\quad
-      \mathit{withdraw}(A) \;\ge\; \mathit{convertToShares}(A)
-    $$
+    ```math
+    \mathit{withdraw}(A) \;\le\; \mathit{previewWithdraw}(A)
+    \quad\wedge\quad
+    \mathit{withdraw}(A) \;\ge\; \mathit{convertToShares}(A)
+    ```
 
 12. **Redeem vs. Preview**
 
-    $$
-      \mathit{redeem}(S) \;\ge\; \mathit{previewRedeem}(S)
-      \quad\wedge\quad
-      \mathit{redeem}(S) \;\le\; \mathit{convertToAssets}(S)
-    $$
+    ```math
+    \mathit{redeem}(S) \;\ge\; \mathit{previewRedeem}(S)
+    \quad\wedge\quad
+    \mathit{redeem}(S) \;\le\; \mathit{convertToAssets}(S)
+    ```
 
 ---
 
@@ -122,11 +135,11 @@
 13. **Uniform Convert**
     For any two callers $X, Y$ and amount $A$:
 
-    $$
-      \mathit{convertToShares}_X(A)\;=\;\mathit{convertToShares}_Y(A)
-      \quad\wedge\quad
-      \mathit{convertToAssets}_X(S)\;=\;\mathit{convertToAssets}_Y(S)
-    $$
+    ```math
+    \mathit{convertToShares}_X(A)\;=\;\mathit{convertToShares}_Y(A)
+    \quad\wedge\quad
+    \mathit{convertToAssets}_X(S)\;=\;\mathit{convertToAssets}_Y(S)
+    ```
 
     (No caller-dependent pricing.)
     Ensures that the conversion rate between assets and shares is the same for all callers, preventing preferential treatment.
@@ -138,7 +151,7 @@
 14. **maxDeposit / maxMint / maxWithdraw / maxRedeem**
     Each limit function:
 
-    * Must return a value $\\in [0, 2^{256}-1]$.
+    * Must return a value $\in [0, 2^{256}-1]$.
     * Must never revert.
     * Must **underestimate** (never overestimate) the actual permissible action. 
 
@@ -155,18 +168,18 @@
 16. **Balance Updates**
 
     * After `deposit(A)`:
-      $\\mathit{balanceOf}(\\mathit{receiver})_{\\text{new}} = \\mathit{balanceOf}_{\\text{old}} + \\mathit{deposit}(A)$
+      $\mathit{balanceOf}(\mathit{receiver})_{\text{new}} = \mathit{balanceOf}_{\text{old}} + \mathit{deposit}(A)$
     * After `withdraw(A)`:
-      $\\mathit{balanceOf}(\\mathit{owner})_{\\text{new}} = \\mathit{balanceOf}_{\\text{old}} - \\mathit{withdraw}(A)$
+      $\mathit{balanceOf}(\mathit{owner})_{\text{new}} = \mathit{balanceOf}_{\text{old}} - \mathit{withdraw}(A)$
 
     Guarantees that a user's share balance accurately reflects the shares received from a deposit or shares taken during a withdrawal.
 
 17. **Supply Updates**
 
     * After `mint(S)`:
-      $\\mathit{totalSupply}_{\\text{new}} = \\mathit{totalSupply}_{\\text{old}} + S$
+      $\mathit{totalSupply}_{\text{new}} = \mathit{totalSupply}_{\text{old}} + S$
     * After `redeem(S)`:
-      $\\mathit{totalSupply}_{\\text{new}} = \\mathit{totalSupply}_{\\text{old}} - S$
+      $\mathit{totalSupply}_{\text{new}} = \mathit{totalSupply}_{\text{old}} - S$
 
     Ensures the vault's total supply of shares is correctly updated when shares are minted or redeemed.
 
